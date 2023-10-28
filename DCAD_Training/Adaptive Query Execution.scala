@@ -38,7 +38,17 @@
 
 // COMMAND ----------
 
+// MAGIC %sql
+// MAGIC DROP TABLE IF EXISTS items;
+// MAGIC DROP TABLE IF EXISTS sales;
+
+// COMMAND ----------
+
 val salesDf = spark.read.table("aqe_demo_db.sales")
+
+// COMMAND ----------
+
+salesDf.count
 
 // COMMAND ----------
 

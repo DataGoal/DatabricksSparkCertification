@@ -7,7 +7,7 @@ import org.apache.spark.sql.functions._
 
 // COMMAND ----------
 
-val df = res49
+val df = customerDf
 .join(addressDf, 
       customerDf("address_id") === addressDf("address_id"))
 .filter(year($"birthdate") > 1980)
@@ -21,7 +21,25 @@ val df = res49
 
 // COMMAND ----------
 
+df.explain()
+
+// COMMAND ----------
+
+df.explain(true)
+
+// COMMAND ----------
+
 df.explain("formatted")
+
+// COMMAND ----------
+
+df.show(10,false)
+
+// COMMAND ----------
+
+df.queryExecution.executedPlan.executeTake(1)
+
+df.explain("codegen")
 
 // COMMAND ----------
 

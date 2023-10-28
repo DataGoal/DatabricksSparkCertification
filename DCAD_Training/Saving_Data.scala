@@ -45,7 +45,8 @@ display(customerPurchases)
 
 // COMMAND ----------
 
-
+customerPurchases
+.write
 
 // COMMAND ----------
 
@@ -59,7 +60,37 @@ customerPurchases
 .partitionBy("item_category")
 .option("compression","lz4")
 .mode(SaveMode.Overwrite)
-.option("path","tmp/output/customerPurchases")
+.option("path","/tmp/output/customerPurchases")
+.save
+
+// COMMAND ----------
+
+val bDf1=customerPurchases
+.select($"*",
+       trim($"item_category").as("it"))
+.drop("item_category")
+.withColumnRenamed("it","item_category")
+bDf1.printSchema()
+
+
+// COMMAND ----------
+
+val bdf2 = customerPurchases
+.select($"*")
+.withColumn("item_category",trim($"item_category"))
+bdf2.printSchema()
+
+// COMMAND ----------
+
+customerPurchases
+.select($"*")
+.withColumn("item_category",trim($"item_category"))
+.repartition(8)
+.write
+.partitionBy("item_category")
+.option("compression","lz4")
+.mode(SaveMode.Overwrite)
+.option("path","/tmp/output/customerPurchases")
 .save
 
 // COMMAND ----------
@@ -76,4 +107,4 @@ customerPurchases.select(length($"item_category")).show
 
 // COMMAND ----------
 
-spark.read.parquet("dbfs:/tmp/output/customerPurchases/item_category=Books")
+spark.read.format("delta").parquet("dbfs:/tmp/output/customerPurchases/")

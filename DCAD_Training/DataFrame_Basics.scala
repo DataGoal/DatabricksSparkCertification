@@ -1,9 +1,17 @@
 // Databricks notebook source
+// MAGIC %fs ls /FileStore/tables/dcad_data
+
+// COMMAND ----------
+
 val customerDf = spark.read.format("json")
-.option("inferSchema",true)
-.schema(customerDfSchema_ST)
+// .option("inferSchema",true)
+ .schema(customerDfSchema_ST)
 // .schema(customerDfSchema_DDL)
 .load("/FileStore/tables/dcad_data/customer.json")
+
+// COMMAND ----------
+
+val cusDF = spark.read.schema(customerDfSchema_DDL).json("/FileStore/tables/dcad_data/customer.json")
 
 // COMMAND ----------
 

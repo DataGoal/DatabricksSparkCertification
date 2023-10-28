@@ -12,6 +12,10 @@ customerDf.select("firstname","lastname","demographics","demographics.credit_rat
 
 // COMMAND ----------
 
+display(res5)
+
+// COMMAND ----------
+
 import org.apache.spark.sql.functions.{col,expr,column}
 
 // COMMAND ----------
@@ -19,7 +23,11 @@ import org.apache.spark.sql.functions.{col,expr,column}
 customerDf.select($"firstname",'lastname,col("demographics.education_status"),
                  column("demographics.credit_rating"),
                  customerDf.col("salutation"),
-                 expr("concat(firstname,lastname) name"))
+                 expr("concat(firstname,' ',lastname) name"))
+
+// COMMAND ----------
+
+display(res8)
 
 // COMMAND ----------
 
@@ -35,7 +43,7 @@ customerDf.columns
 
 // COMMAND ----------
 
-customerDf.withColumnRenamed($"email_address","mail")
+customerDf.withColumnRenamed("email_address","mail")
 
 // COMMAND ----------
 
@@ -68,6 +76,10 @@ customerDf.columns.size
 // COMMAND ----------
 
 import org.apache.spark.sql.functions._
+
+// COMMAND ----------
+
+customerDf.withColumn("fullname",concat($"firstname",$"lastname"))
 
 // COMMAND ----------
 
@@ -165,7 +177,7 @@ demoDf.dropDuplicates(List("name","id")).show
 
 // COMMAND ----------
 
-demoDf.distinct.show
+demoDf.distinct().show
 
 // COMMAND ----------
 
@@ -225,10 +237,10 @@ display(Dfn.na.fill(Map("salutation" -> "UNKNOW","firstname" -> "John", "lastnam
 
 // COMMAND ----------
 
-display(customerDf
+display(customerDf.select("firstname","lastname","birthdate")
 .na.drop("any")
 .sort($"firstname",$"lastname".desc)
-.select("firstname","lastname","birthdate"))
+)
 
 // COMMAND ----------
 
@@ -284,7 +296,7 @@ display(webSalesDf.summary("stddev"))
 // COMMAND ----------
 
 display(customerDf.groupBy(
-  customerDf("birth_country"), $"birthdate")
+  ($"birth_country"), $"birthdate")
         .agg(count("*").as("count"))
        .sort(desc("count")))
 
@@ -299,7 +311,7 @@ display(customerDf)
 // COMMAND ----------
 
 val customerWithAddress =
-customerDf.join(addressDf, customerDf.col("address_id") === addressDf.col("address_id"),"inner")
+customerDf.join(addressDf, customerDf("address_id") === addressDf("address_id"),"inner")
 .select("customer_id"
        ,"firstname"
        ,"lastname"
